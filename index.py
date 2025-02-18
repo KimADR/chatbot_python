@@ -1,5 +1,5 @@
 from chatterbot import ChatBot
-from chatterbot.trainers import ListTrainer
+from chatterbot.trainers import ListTrainer, ChatterBotCorpusTrainer
 
 # Create a new ChatBot instance
 bot = ChatBot("chatbot", read_only=False, 
@@ -13,31 +13,9 @@ bot = ChatBot("chatbot", read_only=False,
 
         ])
          
+trainer = ChatterBotCorpusTrainer(bot)
 
-# Define a list of conversation pairs
-list_to_train = [
-    "hi",
-    "hi there",
-    "What's your name?",
-    "I'm a chatbot",
-    "How old are you?",
-    "I'm ageless!",
-    "why are you so mad?",
-    "I'm not",
-    "do you have iPhone",
-    "I've everything!",
-    "What's your favorite food?",
-    "I don't eat",
-    "what's your job?",
-    "I'm here to answer your questions",
-    "I don't know what are you talking about"
-]
-
-# Create a ListTrainer instance
-list_trainer = ListTrainer(bot)
-
-# Train the chatbot with the conversation list
-list_trainer.train(list_to_train)
+trainer.train("chatterbot.corpus.english")
 
 # Optional: Test the chatbot response
 while True:
