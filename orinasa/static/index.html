@@ -6,6 +6,7 @@
   <title>Orinasa - Assistant d'atelier</title>
   <link rel="stylesheet" href="/static/styles.css" />
   <link rel="stylesheet" href="/static/handover.css" />
+  <link rel="stylesheet" href="/static/chat.css" />
 </head>
 <body>
   <aside class="sidebar">
@@ -55,7 +56,7 @@
           <div id="recentIncidents" class="incident-list"></div>
         </article>
         <article class="panel helper-card">
-          <div class="bubble-icon">◯</div><p class="eyebrow">UN REPÈRE AU QUOTIDIEN</p><h2>La bonne fiche,<br>au bon moment.</h2><p>Une relève à préparer ? Une anomalie à décrire ? Retrouvez des repères simples pour votre atelier.</p><button class="helper-button" data-jump="assistant">Poser une question <span>→</span></button><small>Recherche locale · Sans compte IA</small>
+          <div class="bubble-icon">◯</div><p class="eyebrow">UN REPÈRE AU QUOTIDIEN</p><h2>La bonne fiche,<br>au bon moment.</h2><p>Une relève à préparer ? Une anomalie à décrire ? Retrouvez des repères simples pour votre atelier.</p><button class="helper-button" data-jump="assistant">Poser une question <span>→</span></button><small>Local par défaut · IA en option</small>
         </article>
       </div>
 
@@ -67,15 +68,27 @@
     </section>
 
     <section id="assistant" class="view">
-      <div class="section-title"><p class="eyebrow">ASSISTANT D'ATELIER</p><h1>Retrouvez une fiche utile.</h1><p>La recherche s'effectue uniquement dans les fiches locales fournies avec Orinasa.</p></div>
-      <div class="two-col">
-        <article class="panel form-panel">
-          <label>Votre question</label>
-          <textarea id="assistantQuery" rows="5" placeholder="Ex. Que faire après une coupure électrique ?"></textarea>
-          <button id="askButton" class="primary">Rechercher</button>
-        </article>
-        <article class="panel answer-panel"><h2>Réponse</h2><div id="assistantAnswer" class="answer-empty">Posez une question pour consulter les fiches disponibles.</div></article>
-      </div>
+      <div class="section-title"><p class="eyebrow">ASSISTANT D'ATELIER</p><h1>Des réponses utiles, pour le terrain.</h1><p>Posez une question sur un incident ou consultez les repères des fiches atelier.</p></div>
+      <article class="panel chat-panel">
+        <header class="chat-header">
+          <div class="chat-identity"><span class="chat-avatar">O</span><div><h2>Assistant Orinasa</h2><p><i></i> Recherche locale active · IA externe facultative</p></div></div>
+          <button id="newChatButton" class="chat-reset" type="button">Nouvelle conversation</button>
+        </header>
+        <div id="chatPrivacyNotice" class="chat-privacy" role="status">Mode local : vos questions restent sur cette machine.</div>
+        <div id="chatMessages" class="chat-messages" aria-live="polite" aria-relevant="additions text"></div>
+        <div id="chatError" class="chat-error" role="alert" hidden></div>
+        <div class="chat-prompts" aria-label="Questions rapides">
+          <button type="button" data-chat-prompt="Que faire après une coupure électrique ?">Coupure électrique</button>
+          <button type="button" data-chat-prompt="Que vérifier en cas de bruit ou vibration inhabituelle ?">Bruit ou vibration</button>
+          <button type="button" data-chat-prompt="Comment préparer la relève entre équipes ?">Préparer la relève</button>
+        </div>
+        <form id="chatForm" class="chat-composer">
+          <label class="sr-only" for="chatInput">Votre question</label>
+          <textarea id="chatInput" rows="2" maxlength="2000" placeholder="Décrivez votre question… (Ctrl + Entrée pour envoyer)" required></textarea>
+          <button id="chatSendButton" class="primary" type="submit"><span>Envoyer</span><span aria-hidden="true">↑</span></button>
+        </form>
+        <p class="chat-footnote">Orinasa ne remplace pas les procédures du site ni l’avis d’une personne habilitée. Ne manipulez jamais une machine en mouvement ou sous énergie dangereuse.</p>
+      </article>
     </section>
 
     <section id="incidents" class="view">
@@ -125,6 +138,6 @@
 
     <footer class="main-footer"><span>Orinasa · Assistant d'atelier</span><span>Observer. Consigner. Transmettre.</span></footer>
   </main>
-  <script src="/static/app.js"></script>
+  <script src="/static/app.js?v=3"></script>
 </body>
 </html>

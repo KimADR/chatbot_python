@@ -162,6 +162,23 @@ class AIService:
             except AIProviderError as exc:
                 self._configuration_error = str(exc)
 
+    def status(self) -> dict[str, str | bool]:
+        external = self._provider is not None and self.config.provider != "off"
+        if external:
+            provider = self.config.provider
+            notice = f"Le fournisseur {provider} est activé : les questions envoyées à l'assistant lui seront transmises."
+        else:
+            provider = "local"
+            notice = "Mode local actif : vos questions restent sur cette machine."
+            if self._configuration_error:
+                notice = f"{self._configuration_error} Le mode local est utilisé; aucune question n'est envoyée à un fournisseur externe."
+        return {
+            "provider": provider,
+            "external": external,
+            "fallback_available": True,
+            "notice": notice,
+        }
+
     def chat(self, messages: list[dict[str, str]]) -> dict:
         recent_messages = messages[-10:]
         question = next((item["content"] for item in reversed(recent_messages) if item["role"] == "user"), "")

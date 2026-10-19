@@ -197,6 +197,10 @@ def create_app(
     def assistant(q: str = Query(min_length=1, max_length=300)):
         return answer_question(q)
 
+    @app.get("/api/ai/status")
+    def ai_status():
+        return app.state.ai_service.status()
+
     @app.post("/api/ai/chat")
     def ai_chat(payload: ChatIn, request: Request):
         client_ip = request.client.host if request.client else "unknown"

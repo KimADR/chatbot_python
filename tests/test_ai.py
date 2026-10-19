@@ -33,6 +33,28 @@ def test_ai_off_uses_local_search_without_external_provider():
     assert result["references"][0]["id"] == "FIC-001"
 
 
+def test_ai_status_reports_local_mode_without_external_data_transfer():
+    status = AIService(AIConfig(provider="off")).status()
+
+    assert status["provider"] == "local"
+    assert status["external"] is False
+    assert "restent sur cette machine" in status["notice"]
+
+
+def test_ai_status_reports_external_provider_without_exposing_secret():
+    secret = "must-never-be-returned"
+    service = AIService(
+        AIConfig(provider="openai", openai_api_key=secret, openai_model="test"),
+        provider=FakeProvider(),
+    )
+
+    status = service.status()
+
+    assert status["provider"] == "openai"
+    assert status["external"] is True
+    assert secret not in json.dumps(status)
+
+
 def test_ai_uses_injected_provider_and_supplies_relevant_documents():
     secret = "server-only-key"
     provider = FakeProvider()
@@ -169,6 +191,7 @@ def test_chat_endpoint_validates_payload_and_applies_rate_limit(tmp_path):
 
     assert response.status_code == 200
     assert response.json()["provider"] == "ollama"
+    assert client.get("/api/ai/status").json()["external"] is True
     assert limited.status_code == 429
     assert limited.headers["retry-after"] == "60"
     assert invalid.status_code == 422
@@ -194,3 +217,13 @@ def test_chat_endpoint_rejects_blank_message_content(tmp_path):
     )
 
     assert response.status_code == 422
+
+
+def test_ai_status_endpoint_defaults_to_local_mode(tmp_path):
+    client = TestClient(create_app(tmp_path / "chat.sqlite", seed_demo=False, ai_service=AIService(AIConfig())))
+
+    response = client.get("/api/ai/status")
+
+    assert response.status_code == 200
+    assert response.json()["provider"] == "local"
+    assert response.json()["external"] is False

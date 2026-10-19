@@ -22,7 +22,7 @@ Cette feuille de route découle de l'examen des routes FastAPI, du dépôt SQLit
 | P0 | Route de chat validée, limite de taille et limite de fréquence | S | Infrastructure IA | Ajoutée dans l'étape B |
 | P0 | Instructions de sécurité système, sources locales citées et extraits documentaires traités comme données non fiables | M | Recherche documentaire | Base mise en place dans l'étape B ; tests requis |
 | P0 | Authentification, rôles administrateur/responsable/technicien, protection des routes d'écriture et déploiement sûr | L | Choix du modèle de comptes et gestion de sessions | À faire avant tout déploiement réseau |
-| P1 | Interface conversationnelle française avec historique de session, état de chargement, sources consultables et questions rapides | M | Route `/api/ai/chat` | À faire (étape C) |
+| P1 | Interface conversationnelle française avec historique de session, état de chargement, sources consultables et questions rapides | M | Route `/api/ai/chat` | Réalisée : étape C |
 | P1 | Diagnostic guidé du compresseur avec règles de danger déterministes et arrêt immédiat du parcours à risque | L | Règles métier, interface, tests sécurité | À faire (étape E) |
 | P1 | Gestion de documents validés, recherche, versionnement et désactivation ; citations par version et source | L | Schéma versionné, permissions administrateur | À faire (étape D) |
 | P1 | Migrations SQLite versionnées, sauvegarde/restauration vérifiée et tests de compatibilité de schéma | M | Stratégie de migration et sauvegarde | À faire |
@@ -37,7 +37,7 @@ Cette feuille de route découle de l'examen des routes FastAPI, du dépôt SQLit
 
 1. **Étape A — Audit et cadrage :** conserver cette feuille de route comme référence et établir une base de tests.
 2. **Étape B — Infrastructure IA :** route additive de conversation, adaptateurs de fournisseurs, mode local par défaut, limites et erreurs contrôlées.
-3. **Étape C — Chat :** interface conversationnelle, citations, chargement, questions rapides et adaptation mobile.
+3. **Étape C — Chat :** réalisée : interface conversationnelle, citations consultables, chargement, questions rapides et adaptation mobile.
 4. **Étape D — Connaissances :** gestion des documents validés, import contrôlé, citations vérifiables et tests de données non fiables.
 5. **Étape E — Diagnostic guidé :** concevoir et tester les règles de danger indépendamment du LLM avant tout parcours interactif.
 6. **Étape F — Durcissement :** comptes/rôles, migrations, sauvegarde/restauration, documentation de déploiement et validation manuelle.

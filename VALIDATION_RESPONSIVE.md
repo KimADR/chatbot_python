@@ -4,13 +4,14 @@ Contrôles exécutés le 19 octobre 2026 sur la version reconstruite et amélior
 
 ## Résultats
 
-- **246 tests Python sur 246 réussis** avec `pytest` après l'ajout de l'infrastructure IA.
+- **249 tests Python sur 249 réussis** avec `pytest` après l'ajout de l'interface conversationnelle.
 - `node --check orinasa/static/app.js` : syntaxe JavaScript valide.
 - `python -m orinasa --help` : modes `--demo`, `--empty`, `--read-only`, `--data-dir`, `--host` et `--port` disponibles.
 - `scripts/backup.py --help` : script de sauvegarde cohérent avec `INSTALLATION.md`.
 - contrôle manuel du mode lecture seule : création d'équipement refusée avec HTTP 403.
 - contrôle manuel de la clé API : HTTP 401 sans clé et HTTP 200 avec une clé valide de 24 caractères.
 - contrôle de mise en page avec Chromium : **aucun débordement horizontal à 1440 px et 390 px**.
+- parcours chat en mode local, citation cliquable et stockage de l'historique dans l'onglet vérifiés à 390 px.
 - contrôle du tiroir mobile : navigation entièrement visible après ouverture et fond d'écran actif.
 
 ## Écarts assumés

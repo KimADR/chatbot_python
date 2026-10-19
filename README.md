@@ -9,8 +9,8 @@
 - creer un incident, changer son statut et conserver un historique de mise a jour ;
 - preparer et imprimer une fiche de releve avec les incidents a reprendre et les informations manquantes ;
 - consulter 14 fiches atelier de demonstration ;
-- poser une question a un assistant local qui recherche dans ces fiches ;
-- configurer en option un chat IA OpenAI ou Ollama, avec repli sur la recherche locale ;
+- converser avec un assistant qui cite les fiches utilisees et garde l'historique dans l'onglet ;
+- configurer en option un fournisseur OpenAI ou Ollama, avec repli sur la recherche locale ;
 - calculer un TRS, un cout d'arret, quelques conversions d'unites et des expressions arithmetiques simples ;
 - exporter les incidents en CSV ;
 - fonctionner sans cle API d'IA.
@@ -77,7 +77,7 @@ La recherche locale est active par defaut. Aucune donnee n'est envoyee a un four
 
 Les variables sont lues cote serveur. Ne placez jamais de cle API dans les fichiers statiques ou le navigateur. En Docker, `OLLAMA_BASE_URL` doit pointer vers un serveur accessible depuis le conteneur (par exemple `http://host.docker.internal:11434` si Ollama tourne sur la machine hote). Consultez `INSTALLATION.md` et `.env.example`.
 
-Le chat est fourni par l'API dans cette etape ; l'interface conversationnelle sera une etape ulterieure. L'activation d'un fournisseur externe ne rend pas l'application appropriee a un deploiement reseau : l'authentification et les roles restent a implementer.
+L'interface conversationnelle affiche le mode courant, les références consultées et un indicateur pendant les réponses. L'historique est conservé dans la session de l'onglet et effacé avec « Nouvelle conversation ». L'activation d'un fournisseur externe ne rend pas l'application appropriee a un deploiement reseau : l'authentification et les roles restent a implementer.
 
 ## Limites importantes
 

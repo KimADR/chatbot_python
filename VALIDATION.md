@@ -2,7 +2,7 @@
 
 ## Perimetre couvert
 
-La suite complete a ete executee apres l'ajout de la route IA : **246 tests passent**. Elle couvre notamment les points suivants :
+La suite complete a ete executee apres l'ajout du chat : **249 tests passent**. Elle couvre notamment les points suivants :
 
 - calcul du cout d'arret ;
 - calcul du TRS ;
@@ -15,6 +15,7 @@ La suite complete a ete executee apres l'ajout de la route IA : **246 tests pass
 - tableau de bord et export CSV ;
 - principaux endpoints FastAPI et compatibilite de la route historique de l'assistant ;
 - route de chat IA, validation des conversations, limite de requetes et repli local ;
+- interface conversationnelle, stockage de session et affichage explicite du mode local ou externe ;
 - fournisseurs OpenAI Responses et Ollama verifies avec des doubles de test, sans appel payant ni cle reelle ;
 - citations des fiches locales et traitement des erreurs fournisseurs.
 
@@ -31,6 +32,8 @@ La suite complete a ete executee apres l'ajout de la route IA : **246 tests pass
 9. Exporter la liste CSV.
 10. Reduire la fenetre a une largeur mobile et verifier la navigation.
 11. Sans configuration de fournisseur, envoyer une conversation a `POST /api/ai/chat` et verifier que la reponse est locale.
+12. Dans Assistant, utiliser une question rapide et ouvrir une fiche depuis une référence.
+13. Vérifier à 390 px qu'il n'y a pas de défilement horizontal et que le mode local est annoncé.
 
 ## Limites
 
@@ -38,6 +41,6 @@ La suite complete a ete executee apres l'ajout de la route IA : **246 tests pass
 - le lanceur Windows est fourni mais n'est pas execute dans cet environnement ;
 - Docker est fourni mais sa construction n'est pas executee si le moteur Docker est absent ;
 - les donnees de demonstration ne representent aucune entreprise reelle ;
-- le chat IA expose son API, mais l'interface conversationnelle n'est pas encore integree ;
+- l'interface conversationnelle et les routes ont ete verifiees avec le fournisseur local ; OpenAI/Ollama restent a essayer dans l'environnement de l'utilisateur ;
 - les fournisseurs ont ete verifies avec des doubles de test, pas avec un compte OpenAI ou un serveur Ollama reel ;
 - l'assistant ne genere pas de diagnostic de panne.

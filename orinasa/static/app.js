@@ -93,11 +93,187 @@ $('#incidentForm').addEventListener('submit',async(e)=>{
 
 async function loadKnowledge(){
   const items=await api('/api/knowledge');
-  $('#knowledgeGrid').innerHTML=items.map(c=>`<article class="knowledge-card"><span class="code">${esc(c.id)} · ${esc(c.category)}</span><h3>${esc(c.title)}</h3><p>${esc(c.content)}</p><div class="safety">${esc(c.safety)}</div></article>`).join('');
+  $('#knowledgeGrid').innerHTML=items.map(c=>`<article id="${esc(c.id)}" class="knowledge-card"><span class="code">${esc(c.id)} · ${esc(c.category)}</span><h3>${esc(c.title)}</h3><p>${esc(c.content)}</p><div class="safety">${esc(c.safety)}</div></article>`).join('');
+  return items;
 }
-$('#askButton').addEventListener('click',async()=>{
-  const q=$('#assistantQuery').value.trim(); if(!q)return;
-  try{const r=await api('/api/assistant?q='+encodeURIComponent(q));$('#assistantAnswer').className='answer-box';$('#assistantAnswer').innerHTML=`<div>${esc(r.answer)}</div>${r.references.length?`<div class="refs"><b>Références :</b> ${r.references.map(x=>`${esc(x.id)} — ${esc(x.title)}`).join(' · ')}</div>`:''}`;}catch(e){$('#assistantAnswer').textContent=e.message;}
+
+const chatStorageKey='orinasa.chat.v1';
+let conversation=readConversation();
+let chatSending=false;
+
+function readConversation(){
+  try{
+    const saved=JSON.parse(sessionStorage.getItem(chatStorageKey)||'[]');
+    if(!Array.isArray(saved))return [];
+    return saved.filter(message=>message&&['user','assistant'].includes(message.role)&&typeof message.content==='string'&&message.content.length<=2000).slice(-40).map(message=>({
+      role:message.role,
+      content:message.content,
+      references:Array.isArray(message.references)?message.references.filter(reference=>reference&&typeof reference.id==='string'&&typeof reference.title==='string').slice(0,5):[],
+    }));
+  }catch(error){
+    console.warn('Historique de conversation indisponible.',error);
+    return [];
+  }
+}
+function saveConversation(){
+  try{sessionStorage.setItem(chatStorageKey,JSON.stringify(conversation.slice(-40)));}
+  catch(error){console.warn('Impossible de conserver la conversation dans cet onglet.',error);}
+}
+function scrollChatToLatest(){const node=$('#chatMessages');node.scrollTop=node.scrollHeight;}
+function addChatMessage(message){
+  const bubble=document.createElement('article');
+  bubble.className=`chat-message ${message.role}`;
+  const label=document.createElement('span');
+  label.className='chat-message-label';
+  label.textContent=message.role==='user'?'VOUS':'ASSISTANT ORINASA';
+  const text=document.createElement('p');
+  text.textContent=message.content;
+  bubble.append(label,text);
+
+  if(message.role==='assistant'&&message.references?.length){
+    const references=document.createElement('div');
+    references.className='chat-references';
+    const title=document.createElement('span');
+    title.className='chat-references-label';
+    title.textContent='Fiches consultées — sélectionnez une source pour la lire';
+    references.append(title);
+    message.references.forEach(reference=>{
+      const button=document.createElement('button');
+      button.type='button';
+      button.className='chat-reference';
+      button.dataset.knowledgeRef=reference.id;
+      button.textContent=`${reference.id} · ${reference.title}`;
+      references.append(button);
+    });
+    bubble.append(references);
+  }
+  $('#chatMessages').append(bubble);
+  scrollChatToLatest();
+  return bubble;
+}
+function renderConversation(){
+  const node=$('#chatMessages');
+  node.replaceChildren();
+  if(!conversation.length){
+    const welcome=document.createElement('div');
+    welcome.className='chat-welcome';
+    welcome.innerHTML='<span class="chat-welcome-mark" aria-hidden="true">◌</span><h3>Comment puis-je vous aider ?</h3><p>Décrivez un incident, un équipement ou une consigne à transmettre. Je chercherai dans les fiches atelier disponibles.</p>';
+    node.append(welcome);
+    return;
+  }
+  conversation.forEach(addChatMessage);
+}
+async function loadChatStatus(){
+  const status=await api('/api/ai/status');
+  const notice=$('#chatPrivacyNotice');
+  notice.textContent=status.notice;
+  notice.dataset.mode=status.external?'external':'local';
+}
+function setChatBusy(busy){
+  chatSending=busy;
+  $('#chatInput').disabled=busy;
+  $('#chatSendButton').disabled=busy;
+  $('#newChatButton').disabled=busy;
+  $$('[data-chat-prompt]').forEach(button=>button.disabled=busy);
+  $('#chatSendButton').querySelector('span:first-child').textContent=busy?'Réponse…':'Envoyer';
+}
+function addTypingIndicator(){
+  const bubble=document.createElement('article');
+  bubble.className='chat-message assistant chat-loading';
+  bubble.setAttribute('role','status');
+  bubble.innerHTML='<span class="chat-message-label">ASSISTANT ORINASA</span><span class="chat-typing">Recherche en cours <span class="chat-typing-dots" aria-hidden="true"><i></i><i></i><i></i></span></span>';
+  $('#chatMessages').append(bubble);
+  scrollChatToLatest();
+  return bubble;
+}
+function requestMessagesWith(userMessage){
+  const candidate=[...conversation,{role:'user',content:userMessage}];
+  const selected=[];
+  let characters=0;
+  for(const message of candidate.slice(-20).reverse()){
+    if(characters+message.content.length>5500)break;
+    selected.push({role:message.role,content:message.content});
+    characters+=message.content.length;
+  }
+  return selected.reverse();
+}
+async function sendChatMessage(message){
+  if(chatSending||!message.trim())return;
+  const content=message.trim();
+  $('#chatError').hidden=true;
+  $('#chatError').textContent='';
+  const welcome=$('.chat-welcome');
+  if(welcome)welcome.remove();
+  const pendingUser=addChatMessage({role:'user',content});
+  const loading=addTypingIndicator();
+  setChatBusy(true);
+  try{
+    const result=await api('/api/ai/chat',{
+      method:'POST',
+      body:JSON.stringify({messages:requestMessagesWith(content)}),
+    });
+    loading.remove();
+    conversation.push({role:'user',content});
+    conversation.push({
+      role:'assistant',
+      content:result.answer,
+      references:result.references||[],
+    });
+    conversation=conversation.slice(-40);
+    saveConversation();
+    addChatMessage(conversation[conversation.length-1]);
+    $('#chatInput').value='';
+    const privacy=$('#chatPrivacyNotice');
+    privacy.textContent=result.notice||`Réponse fournie par ${result.provider}. Les questions de cette conversation sont envoyées au fournisseur configuré.`;
+    privacy.dataset.mode=result.fallback?'fallback':result.provider==='local'?'local':'external';
+  }catch(error){
+    pendingUser.remove();
+    loading.remove();
+    $('#chatError').textContent=error.message;
+    $('#chatError').hidden=false;
+    renderConversation();
+  }finally{
+    setChatBusy(false);
+    $('#chatInput').focus();
+  }
+}
+$('#chatForm').addEventListener('submit',event=>{
+  event.preventDefault();
+  sendChatMessage($('#chatInput').value);
+});
+$('#chatInput').addEventListener('keydown',event=>{
+  if(event.key==='Enter'&&event.ctrlKey){
+    event.preventDefault();
+    $('#chatForm').requestSubmit();
+  }
+});
+$$('[data-chat-prompt]').forEach(button=>button.addEventListener('click',()=>sendChatMessage(button.dataset.chatPrompt)));
+$('#newChatButton').addEventListener('click',()=>{
+  conversation=[];
+  saveConversation();
+  $('#chatError').hidden=true;
+  $('#chatError').textContent='';
+  $('#chatPrivacyNotice').dataset.mode='';
+  loadChatStatus().catch(error=>console.error(error));
+  renderConversation();
+  $('#chatInput').focus();
+});
+$('#chatMessages').addEventListener('click',async event=>{
+  const button=event.target.closest('[data-knowledge-ref]');
+  if(!button)return;
+  try{
+    await loadKnowledge();
+    showView('knowledge');
+    document.getElementById(button.dataset.knowledgeRef)?.scrollIntoView({behavior:'smooth',block:'center'});
+  }catch(error){
+    $('#chatError').textContent=`Impossible d'ouvrir cette fiche : ${error.message}`;
+    $('#chatError').hidden=false;
+  }
+});
+renderConversation();
+loadChatStatus().catch(error=>{
+  $('#chatPrivacyNotice').textContent=`Impossible de vérifier le mode IA : ${error.message}`;
+  $('#chatPrivacyNotice').dataset.mode='fallback';
 });
 
 $('#costButton').addEventListener('click',async()=>{try{const r=await api('/api/calculate/downtime',{method:'POST',body:JSON.stringify({minutes:Number($('#costMinutes').value),hourly_rate:Number($('#costRate').value)})});$('#costResult').textContent=`${fmtAr(r.result)} Ar`;}catch(e){$('#costResult').textContent=e.message}});
