@@ -1,0 +1,29 @@
+ORINASA - L'ATELIER, EN CLAIR.
+================================
+
+Ce dossier contient une version fonctionnelle de demonstration d'un assistant d'atelier local.
+
+DEMARRAGE WINDOWS
+1. Installez Python 3.12.
+2. Double-cliquez sur LANCER_DEMO.bat.
+3. Au premier lancement, l'installation des dependances necessite Internet.
+4. Ouvrez ensuite http://127.0.0.1:8000 si le navigateur ne s'ouvre pas automatiquement.
+5. Gardez la fenetre de commande ouverte pendant l'utilisation.
+
+DEMARRAGE LINUX / macOS
+  sh lancer_demo.sh
+
+IMPORTANT
+- Les donnees de demonstration sont fictives.
+- Les fiches sont des modeles a adapter et a faire valider sur chaque site.
+- Orinasa n'effectue pas de diagnostic automatique de machine.
+- Aucune cle API d'intelligence artificielle n'est necessaire.
+- La base SQLite locale est creee automatiquement dans data/ et n'est pas versionnee par Git.
+
+DOCUMENTS UTILES
+- INSTALLATION.md : installation et modes demo / atelier vide
+- VALIDATION.md : perimetre de verification et limites
+- PORTFOLIO.md : presentation du projet pour un portfolio
+- README.md : vue technique et fonctionnelle
+- integration/APPLIQUER_GIT.md : integration dans votre depot existant
+- RECONSTITUTION.md : transparence sur la presente archive

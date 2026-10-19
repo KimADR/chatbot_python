@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "orinasa"
+version = "1.0.0"
+description = "Assistant local d'atelier pour le suivi des incidents et les fiches terrain"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi==0.128.2",
+  "uvicorn[standard]==0.48.0",
+  "openai>=1.66,<3",
+]
+
+[tool.setuptools.packages.find]
+include = ["orinasa*"]
+
+[tool.setuptools.package-data]
+orinasa = ["static/*.html", "static/*.css", "static/*.js"]

@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orinasa - Assistant d'atelier</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <link rel="stylesheet" href="/static/handover.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-grid"><i></i><i></i><i></i><i></i></span><div><strong>orinasa</strong><small>L'ATELIER, EN CLAIR.</small></div></div>
+    <div class="site-card"><span class="site-icon">▥</span><div><b>Atelier pilote</b><small>Espace de travail</small></div><span class="dot"></span></div>
+    <p class="nav-label">VOTRE ATELIER</p>
+    <nav>
+      <button class="nav-item active" data-view="dashboard"><span>▦</span> Vue d'ensemble</button>
+      <button class="nav-item" data-view="assistant"><span>◌</span> Assistant</button>
+      <button class="nav-item" data-view="incidents"><span>⚠</span> Incidents <em id="navIncidentCount">0</em></button>
+      <button class="nav-item" data-view="knowledge"><span>▤</span> Fiches atelier</button>
+      <button class="nav-item" data-view="calculations"><span>▧</span> Calculs</button>
+      <button class="nav-item" data-view="handover"><span>⇢</span> Relève</button>
+    </nav>
+    <div class="sidebar-bottom">
+      <p class="nav-label">PENSÉ POUR LE TERRAIN</p>
+      <p>Des observations utiles.<br>Des équipes mieux informées.</p>
+      <p class="madagascar">🇲🇬 Madagascar</p>
+      <div class="about">ⓘ &nbsp; À propos d'Orinasa <span>v1.0.0</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div><span>Espace atelier</span><b>/</b><strong id="breadcrumb">Vue d'ensemble</strong></div>
+      <div class="top-actions"><span class="demo">DÉMONSTRATION</span><span class="available"><i></i> Service disponible</span></div>
+    </header>
+
+    <section id="dashboard" class="view active-view">
+      <div class="hero-row">
+        <div><p class="eyebrow">SUIVI OPÉRATIONNEL</p><h1>Votre atelier, en un regard.</h1><p class="subhead">Suivez les incidents. Capitalisez les bonnes pratiques. Avancez ensemble.</p></div>
+        <button class="primary" data-jump="incidents">＋ Signaler un incident</button>
+      </div>
+      <div class="context-row"><span><i></i> <b>Atelier pilote</b></span><span>|</span><span id="todayLabel"></span><span class="grow"></span><span>Toutes les saisies</span></div>
+
+      <div class="kpis">
+        <article><div class="kpi-top"><span>Incidents ouverts</span><i>⚠</i></div><strong id="kpiOpen">0</strong><small>À traiter ou en cours</small></article>
+        <article><div class="kpi-top"><span>Priorité critique</span><i class="warn">ϟ</i></div><strong id="kpiCritical">0</strong><small>Incidents non résolus</small></article>
+        <article><div class="kpi-top"><span>Temps d'arrêt saisi</span><i>◷</i></div><strong><span id="kpiHours">0</span><sup>h</sup></strong><small>Cumul des incidents enregistrés</small></article>
+        <article><div class="kpi-top"><span>Coût d'arrêt estimé</span><i>▦</i></div><strong><span id="kpiCost">0</span><sup>Ar</sup></strong><small>D'après les taux horaires saisis</small></article>
+      </div>
+      <p class="fineprint">Estimations selon les coûts horaires saisis, hors rebuts et coûts indirects. Les arrêts de plusieurs équipements peuvent se recouper.</p>
+
+      <div class="dashboard-grid">
+        <article class="panel incidents-panel">
+          <div class="panel-head"><div><h2>Derniers incidents</h2><p>Gardez les événements récents à portée de main.</p></div><button class="text-link" data-jump="incidents">Tout voir →</button></div>
+          <div id="recentIncidents" class="incident-list"></div>
+        </article>
+        <article class="panel helper-card">
+          <div class="bubble-icon">◯</div><p class="eyebrow">UN REPÈRE AU QUOTIDIEN</p><h2>La bonne fiche,<br>au bon moment.</h2><p>Une relève à préparer ? Une anomalie à décrire ? Retrouvez des repères simples pour votre atelier.</p><button class="helper-button" data-jump="assistant">Poser une question <span>→</span></button><small>Recherche locale · Sans compte IA</small>
+        </article>
+      </div>
+
+      <div class="lower-grid">
+        <article class="panel"><div class="panel-head"><div><h2>Activité de la semaine</h2><p>Incidents déclarés · 7 derniers jours</p></div><span class="legend">■ Déclarations</span></div><div id="weekChart" class="week-chart"></div><p class="chart-note"><b id="declCount">0 déclarations</b> · <span id="downtimeNote">0 h d'arrêt saisi</span></p></article>
+        <article class="panel"><div class="panel-head"><div><h2>Par catégorie</h2><p>Répartition de toutes les saisies</p></div><span>⌘</span></div><div id="categoryChart" class="category-chart"></div></article>
+      </div>
+      <div class="dashboard-footer"><span>▤ &nbsp;<b id="knowledgeCount">14</b> fiches de référence</span><span>▥ &nbsp;<b id="equipmentCount">0</b> équipements enregistrés</span><span class="grow"></span><span>Les données de démonstration sont fictives.</span></div>
+    </section>
+
+    <section id="assistant" class="view">
+      <div class="section-title"><p class="eyebrow">ASSISTANT D'ATELIER</p><h1>Retrouvez une fiche utile.</h1><p>La recherche s'effectue uniquement dans les fiches locales fournies avec Orinasa.</p></div>
+      <div class="two-col">
+        <article class="panel form-panel">
+          <label>Votre question</label>
+          <textarea id="assistantQuery" rows="5" placeholder="Ex. Que faire après une coupure électrique ?"></textarea>
+          <button id="askButton" class="primary">Rechercher</button>
+        </article>
+        <article class="panel answer-panel"><h2>Réponse</h2><div id="assistantAnswer" class="answer-empty">Posez une question pour consulter les fiches disponibles.</div></article>
+      </div>
+    </section>
+
+    <section id="incidents" class="view">
+      <div class="section-title"><p class="eyebrow">SUIVI DES INCIDENTS</p><h1>Consignez, suivez, transmettez.</h1><p>Enregistrez les faits utiles et gardez un historique simple des actions.</p></div>
+      <div class="two-col incident-layout">
+        <article class="panel form-panel">
+          <h2>Nouvel incident</h2>
+          <form id="incidentForm">
+            <label>Titre<input name="title" required maxlength="180" placeholder="Décrire brièvement l'anomalie"></label>
+            <div class="form-grid"><label>Équipement<select name="equipment_id" id="equipmentSelect"><option value="">Sans équipement</option></select></label><label>Catégorie<select name="category"><option>Electricite</option><option>Mecanique</option><option>Qualite</option><option>Securite</option><option>Maintenance</option><option>Production</option><option>Organisation</option><option selected>Autre</option></select></label></div>
+            <div class="form-grid"><label>Priorité<select name="priority"><option>faible</option><option selected>normale</option><option>haute</option><option>critique</option></select></label><label>Temps d'arrêt (min)<input name="downtime_minutes" type="number" min="0" step="1" value="0"></label></div>
+            <label>Description<textarea name="description" rows="4" placeholder="Faits observés, contexte, action immédiate..."></textarea></label>
+            <button class="primary" type="submit">Enregistrer l'incident</button><p id="incidentFormMsg" class="form-message"></p>
+          </form>
+        </article>
+        <article class="panel"><div class="panel-head"><div><h2>Incidents enregistrés</h2><p>Changez le statut ou exportez la liste.</p></div><a class="text-link" href="/api/incidents/export.csv">Exporter CSV ↓</a></div><div id="allIncidents" class="incident-table"></div></article>
+      </div>
+    </section>
+
+    <section id="handover" class="view">
+      <div class="section-title"><p class="eyebrow">TRANSMISSION D'ÉQUIPE</p><h1>La relève en un regard.</h1><p>Un résumé des incidents encore ouverts, préparé pour aider l'équipe suivante à reprendre le fil.</p></div>
+      <article class="panel handover-sheet">
+        <div class="handover-heading">
+          <div><p class="eyebrow">ORINASA · FICHE DE RELÈVE</p><h2>À transmettre au prochain poste</h2><p id="handoverGenerated" class="handover-date"></p></div>
+          <div class="handover-actions"><button id="refreshHandover" class="text-link">Actualiser</button><button id="printHandover" class="primary">Imprimer la relève</button></div>
+        </div>
+        <div id="handoverSummary" class="handover-summary" aria-live="polite"></div>
+        <div id="handoverIncidents" class="handover-incidents" aria-live="polite"></div>
+        <p class="handover-note">Cette fiche reprend les informations consignées dans Orinasa. Vérifiez les consignes du site et transmettez oralement toute information urgente.</p>
+      </article>
+    </section>
+
+    <section id="knowledge" class="view">
+      <div class="section-title"><p class="eyebrow">FICHES ATELIER</p><h1>Des repères simples pour le terrain.</h1><p>Ces fiches sont des modèles de démonstration à adapter aux procédures de chaque site.</p></div>
+      <div id="knowledgeGrid" class="knowledge-grid"></div>
+    </section>
+
+    <section id="calculations" class="view">
+      <div class="section-title"><p class="eyebrow">CALCULS</p><h1>Quelques calculs utiles, sans tableur.</h1><p>Les résultats sont des aides de pilotage et dépendent des valeurs saisies.</p></div>
+      <div class="calc-grid">
+        <article class="panel form-panel"><h2>Coût d'un arrêt</h2><label>Durée (minutes)<input id="costMinutes" type="number" min="0" value="45"></label><label>Taux horaire (Ar/h)<input id="costRate" type="number" min="0" value="80000"></label><button class="primary" id="costButton">Calculer</button><div class="result" id="costResult">—</div></article>
+        <article class="panel form-panel"><h2>TRS</h2><label>Disponibilité (%)<input id="trsA" type="number" min="0" max="100" value="90"></label><label>Performance (%)<input id="trsP" type="number" min="0" max="100" value="95"></label><label>Qualité (%)<input id="trsQ" type="number" min="0" max="100" value="98"></label><button class="primary" id="trsButton">Calculer</button><div class="result" id="trsResult">—</div></article>
+        <article class="panel form-panel"><h2>Conversion</h2><label>Valeur<input id="unitValue" type="number" value="1000"></label><div class="form-grid"><label>De<select id="unitFrom"><option>mm</option><option>cm</option><option selected>m</option><option>km</option><option>g</option><option>kg</option><option>ml</option><option>l</option><option>min</option><option>h</option></select></label><label>Vers<select id="unitTo"><option>mm</option><option selected>cm</option><option>m</option><option>km</option><option>g</option><option>kg</option><option>ml</option><option>l</option><option>min</option><option>h</option></select></label></div><button class="primary" id="unitButton">Convertir</button><div class="result" id="unitResult">—</div></article>
+        <article class="panel form-panel"><h2>Calcul simple</h2><label>Expression<input id="arithExpr" value="45 / 60 * 80000"></label><button class="primary" id="arithButton">Calculer</button><div class="result" id="arithResult">—</div></article>
+      </div>
+    </section>
+
+    <footer class="main-footer"><span>Orinasa · Assistant d'atelier</span><span>Observer. Consigner. Transmettre.</span></footer>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

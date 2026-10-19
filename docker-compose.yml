@@ -1,0 +1,16 @@
+services:
+  orinasa:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      ORINASA_DEMO_MODE: "1"
+      ORINASA_AI_PROVIDER: ${ORINASA_AI_PROVIDER:-off}
+      ORINASA_AI_TIMEOUT_SECONDS: ${ORINASA_AI_TIMEOUT_SECONDS:-20}
+      ORINASA_AI_RATE_LIMIT: ${ORINASA_AI_RATE_LIMIT:-20}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-}
