@@ -93,7 +93,8 @@ def create_app(
     seed_demo: bool = True,
     ai_service: AIService | None = None,
 ) -> FastAPI:
-    resolved = Path(db_path or os.getenv("ORINASA_DB_PATH", BASE_DIR / "data" / "orinasa.sqlite"))
+    default_db = Path(os.getenv("ORINASA_DATA_DIR", BASE_DIR / "data")) / "orinasa.sqlite"
+    resolved = Path(db_path or os.getenv("ORINASA_DB_PATH") or default_db)
     repo = Repository(resolved)
     configured_ai_service = ai_service or AIService()
     if seed_demo and os.getenv("ORINASA_DEMO_MODE", "1") != "0":

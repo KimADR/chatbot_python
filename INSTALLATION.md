@@ -74,6 +74,14 @@ Vous pouvez choisir un autre emplacement de base :
 ORINASA_DB_PATH=./data/atelier_reel.sqlite ORINASA_DEMO_MODE=0 python main.py
 ```
 
+Pour lancer une demonstration avec une base dans un dossier separe :
+
+```bash
+python -m orinasa --demo --data-dir ./data-demo --port 8001
+```
+
+La base `orinasa.sqlite` est creee dans ce dossier si `ORINASA_DB_PATH` n'est pas defini.
+
 ## Sauvegarde
 
 ```bash

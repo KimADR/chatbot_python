@@ -6,6 +6,14 @@ from orinasa.app import create_app
 def client(tmp_path):
     return TestClient(create_app(tmp_path / "api.sqlite", seed_demo=False))
 
+def test_create_app_uses_data_dir_when_database_path_is_unset(tmp_path, monkeypatch):
+    monkeypatch.delenv("ORINASA_DB_PATH", raising=False)
+    monkeypatch.setenv("ORINASA_DATA_DIR", str(tmp_path))
+
+    app = create_app(seed_demo=False)
+
+    assert app.state.repo.db_path == tmp_path / "orinasa.sqlite"
+
 
 def add_equipment(c):
     return c.post("/api/equipment", json={"name":"Pompe","location":"Zone A","hourly_rate":80000}).json()
